@@ -1,0 +1,69 @@
+proxy: ""
+timeout: 5
+thread: 50
+urlSteps: 1
+jsSteps: 3
+max: 99999
+headers:
+    Accept: '*/*'
+    Cookie: ""
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36 SE 2.X MetaSr 1.0
+jsFind:
+    - (https{0,1}:[-a-zA-Z0-9（）@:%_\+.~#?&//=]{2,250}?[-a-zA-Z0-9（）@:%_\+.~#?&//=]{3}[.]js)
+    - '["''‘“`]\s{0,6}(/{0,1}[-a-zA-Z0-9（）@:%_\+.~#?&//=]{2,250}?[-a-zA-Z0-9（）@:%_\+.~#?&//=]{3}[.]js)'
+    - =\s{0,6}[",',’,”]{0,1}\s{0,6}(/{0,1}[-a-zA-Z0-9（）@:%_\+.~#?&//=]{2,250}?[-a-zA-Z0-9（）@:%_\+.~#?&//=]{3}[.]js)
+urlFind:
+    - '["''‘“`]\s{0,6}(https{0,1}:[-a-zA-Z0-9()@:%_\+.~#?&//={}]{2,250}?)\s{0,6}["''‘“`]'
+    - =\s{0,6}(https{0,1}:[-a-zA-Z0-9()@:%_\+.~#?&//={}]{2,250})
+    - '["''‘“`]\s{0,6}([#,.]{0,2}/[-a-zA-Z0-9()@:%_\+.~#?&//={}]{2,250}?)\s{0,6}["''‘“`]'
+    - '"([-a-zA-Z0-9()@:%_\+.~#?&//={}]+?[/]{1}[-a-zA-Z0-9()@:%_\+.~#?&//={}]+?)"'
+    - href\s{0,6}=\s{0,6}["'‘“`]{0,1}\s{0,6}([-a-zA-Z0-9()@:%_\+.~#?&//={}]{2,250})|action\s{0,6}=\s{0,6}["'‘“`]{0,1}\s{0,6}([-a-zA-Z0-9()@:%_\+.~#?&//={}]{2,250})
+infoFiler:
+    Email:
+        - ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+    IDcard:
+        - '[^0-9]((\d{8}(0\d|10|11|12)([0-2]\d|30|31)\d{3}$)|(\d{6}(18|19|20)\d{2}(0[1-9]|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)))[^0-9]'
+    Jwt:
+        - '[''"](ey[A-Za-z0-9_-]{10,}\.[A-Za-z0-9._-]{10,}|ey[A-Za-z0-9_\/+-]{10,}\.[A-Za-z0-9._\/+-]{10,})[''"]'
+    Other:
+        - (access.{0,1}key|access.{0,1}Key|access.{0,1}Id|access.{0,1}id|.{0,5}密码|.{0,5}账号|默认.{0,5}|加密|解密|password:.{0,10}|username:.{0,10})
+    Phone:
+        - '[^\w]((?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8})[^\w]'
+    grafana:
+        - \bglc_[A-Za-z0-9\-_+/]{32,200}={0,2}\b
+        - \bglsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8}\b
+    ip:
+        - (?:10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(?:172\.(?:(?:1[6-9])|(?:2\d)|(?:3[01]))\.\d{1,3}\.\d{1,3})|(?:192\.168\.\d{1,3}\.\d{1,3})
+    jdbc:
+        - (jdbc:[a-z:]+://[a-z0-9\.\-_:;=/@?,&]+)
+    swaggerui:
+        - ((swagger-ui.html)|(\"swagger\":)|(Swagger UI)|(swaggerUi)|(swaggerVersion))
+    webhook:
+        - \bhttps://qyapi.weixin.qq.com/cgi-bin/webhook/send\?key=[a-zA-Z0-9\-]{25,50}\b
+        - \bhttps://oapi.dingtalk.com/robot/send\?access_token=[a-z0-9]{50,80}\b
+        - \bhttps://open.feishu.cn/open-apis/bot/v2/hook/[a-z0-9\-]{25,50}\b
+        - \bhttps://hooks.slack.com/services/[a-zA-Z0-9\-_]{6,12}/[a-zA-Z0-9\-_]{6,12}/[a-zA-Z0-9\-_]{15,24}\b
+risks:
+    - remove
+    - delete
+    - insert
+    - update
+    - logout
+jsFiler:
+    - www\.w3\.org
+    - example\.com
+urlFiler:
+    - \.js\?|\.css\?|\.jpeg\?|\.jpg\?|\.png\?|.gif\?|www\.w3\.org|example\.com|\<|\>|\{|\}|\[|\]|\||\^|;|/js/|\.src|\.replace|\.url|\.att|\.href|location\.href|javascript:|location:|application/x-www-form-urlencoded|\.createObject|:location|\.path|\*#__PURE__\*|\*\$0\*|\n
+    - .*\.js$|.*\.css$|.*\.scss$|.*,$|.*\.jpeg$|.*\.jpg$|.*\.png$|.*\.gif$|.*\.ico$|.*\.svg$|.*\.vue$|.*\.ts$
+jsFuzzPath:
+    - login.js
+    - app.js
+    - main.js
+    - config.js
+    - admin.js
+    - info.js
+    - open.js
+    - user.js
+    - input.js
+    - list.js
+    - upload.js
