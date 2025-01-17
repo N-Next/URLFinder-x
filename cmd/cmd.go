@@ -59,5 +59,7 @@ Options:
 
 func Parse() {
 	color.LightCyan.Printf("  _   _ ____  _     _____ _           _                    \n | | | |  _ \\| |   |  ___(_)_ __   __| | ___ _ __    __  __\n | | | | |_) | |   | |_  | | '_ \\ / _` |/ _ \\ '__|___\\ \\/ /\n | |_| |  _ <| |___|  _| | | | | | (_| |  __/ | |_____>  < \n  \\___/|_| \\_\\_____|_|   |_|_| |_|\\__,_|\\___|_|      /_/\\_\\")
+	color.LightBlue.Printf("\n by N-Next")
+	color.LightBlue.Printf("\n https://github.com/N-Next/URLFinder-x")
 	flag.Parse()
 }

@@ -62,6 +62,7 @@ var (
 	Ip        = []string{"(?:10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(?:172\\.(?:(?:1[6-9])|(?:2\\d)|(?:3[01]))\\.\\d{1,3}\\.\\d{1,3})|(?:192\\.168\\.\\d{1,3}\\.\\d{1,3})"}
 	Swaggerui = []string{"((swagger-ui.html)|(\\\"swagger\\\":)|(Swagger UI)|(swaggerUi)|(swaggerVersion))"}
 	Jdbc      = []string{"(jdbc:[a-z:]+://[a-z0-9\\.\\-_:;=/@?,&]+)"}
+	Infofind  = make(map[string][]string)
 )
 
 var (
@@ -95,7 +96,7 @@ func GetConfig(path string) {
 			Conf.Timeout = cmd.TI
 			Conf.Thread = cmd.T
 			Conf.Max = cmd.MA
-			Conf.InfoFind = map[string][]string{"Phone": Phone, "Email": Email, "IDcard": IDcard, "Jwt": Jwt, "webhook": Webhook, "grafana": Grafana, "ip": Ip, "swaggerui": Swaggerui, "jdbc": Jdbc, "Other": Other}
+			//Conf.InfoFind = map[string][]string{"Phone": Phone, "Email": Email, "IDcard": IDcard, "Jwt": Jwt, "webhook": Webhook, "grafana": Grafana, "ip": Ip, "swaggerui": Swaggerui, "jdbc": Jdbc, "Other": Other}
 			data, err2 := yaml.Marshal(Conf)
 			err2 = os.WriteFile(path, data, 0644)
 			if err2 != nil {
@@ -115,16 +116,17 @@ func GetConfig(path string) {
 		JsFiler = Conf.JsFiler
 		UrlFiler = Conf.UrlFiler
 		JsFuzzPath = Conf.JsFuzzPath
-		Phone = Conf.InfoFind["Phone"]
-		Email = Conf.InfoFind["Email"]
-		IDcard = Conf.InfoFind["IDcard"]
-		Jwt = Conf.InfoFind["Jwt"]
-		Other = Conf.InfoFind["Other"]
-		Webhook = Conf.InfoFind["webhook"]
-		Grafana = Conf.InfoFind["grafana"]
-		Ip = Conf.InfoFind["ip"]
-		Swaggerui = Conf.InfoFind["swaggerui"]
-		Jdbc = Conf.InfoFind["jdbc"]
+		Infofind = Conf.InfoFind
+		//Phone = Conf.InfoFind["Phone"]
+		//Email = Conf.InfoFind["Email"]
+		//IDcard = Conf.InfoFind["IDcard"]
+		//Jwt = Conf.InfoFind["Jwt"]
+		//Other = Conf.InfoFind["Other"]
+		//Webhook = Conf.InfoFind["webhook"]
+		//Grafana = Conf.InfoFind["grafana"]
+		//Ip = Conf.InfoFind["ip"]
+		//Swaggerui = Conf.InfoFind["swaggerui"]
+		//Jdbc = Conf.InfoFind["jdbc"]
 		JsSteps = Conf.JsSteps
 		UrlSteps = Conf.UrlSteps
 		Risks = Conf.Risks

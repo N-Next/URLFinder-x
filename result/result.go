@@ -25,13 +25,12 @@ var (
 	ResultUrl []mode.Link
 	Fuzzs     []mode.Link
 	Infos     []mode.Info
-
-	EndUrl   []string
-	Jsinurl  map[string]string
-	Jstourl  map[string]string
-	Urltourl map[string]string
-	Domains  []string
-	Redirect map[string]bool
+	EndUrl    []string
+	Jsinurl   map[string]string
+	Jstourl   map[string]string
+	Urltourl  map[string]string
+	Domains   []string
+	Redirect  map[string]bool
 )
 
 func outHtmlString(link mode.Link) string {
@@ -203,40 +202,13 @@ func OutFileCsv(out string) {
 	for _, u := range Domains {
 		resultWriter.Write([]string{u})
 	}
-	resultWriter.Write([]string{""})
-	resultWriter.Write([]string{"Phone"})
-	for i := range Infos {
-		for i2 := range Infos[i].Phone {
-			resultWriter.Write([]string{Infos[i].Phone[i2], "", "", "", Infos[i].Source})
+	for _, info := range Infos {
+		resultWriter.Write([]string{""})
+		resultWriter.Write([]string{info.Key})
+		for _, match := range info.Matches {
+			resultWriter.Write([]string{"匹配到数据：", match})
 		}
-	}
-	resultWriter.Write([]string{""})
-	resultWriter.Write([]string{"Email"})
-	for i := range Infos {
-		for i2 := range Infos[i].Email {
-			resultWriter.Write([]string{Infos[i].Email[i2], "", "", "", Infos[i].Source})
-		}
-	}
-	resultWriter.Write([]string{""})
-	resultWriter.Write([]string{"Email"})
-	for i := range Infos {
-		for i2 := range Infos[i].IDcard {
-			resultWriter.Write([]string{Infos[i].IDcard[i2], "", "", "", Infos[i].Source})
-		}
-	}
-	resultWriter.Write([]string{""})
-	resultWriter.Write([]string{"JWT"})
-	for i := range Infos {
-		for i2 := range Infos[i].JWT {
-			resultWriter.Write([]string{Infos[i].JWT[i2], "", "", "", Infos[i].Source})
-		}
-	}
-	resultWriter.Write([]string{""})
-	resultWriter.Write([]string{"Other"})
-	for i := range Infos {
-		for i2 := range Infos[i].Other {
-			resultWriter.Write([]string{Infos[i].Other[i2], "", "", "", Infos[i].Source})
-		}
+		resultWriter.Write([]string{info.Source})
 	}
 
 	resultWriter.Flush()
@@ -249,7 +221,7 @@ func OutFileCsv(out string) {
 // 导出json
 func OutFileJson(out string) {
 	jsons := make(map[string]interface{})
-	var info map[string][]map[string]string
+	//var info map[string][]map[string]string
 	//获取域名
 	var host string
 	re := regexp.MustCompile("([a-z0-9\\-]+\\.)*([a-z0-9\\-]+\\.[a-z0-9\\-]+)(:[0-9]+)?")
@@ -268,31 +240,9 @@ func OutFileJson(out string) {
 	ResultUrlHost, ResultUrlOther := util.UrlDispose(ResultUrl, host, util.GetHost(cmd.U))
 	Domains = util.GetDomains(util.MergeArray(ResultJs, ResultUrl))
 
-	if len(Infos) > 0 {
-		info = make(map[string][]map[string]string)
-		info["IDcard"] = nil
-		info["JWT"] = nil
-		info["Email"] = nil
-		info["Phone"] = nil
-		info["Other"] = nil
-	}
-
-	for i := range Infos {
-		for i2 := range Infos[i].IDcard {
-			info["IDcard"] = append(info["IDcard"], map[string]string{"IDcard": Infos[i].IDcard[i2], "Source": Infos[i].Source})
-		}
-		for i2 := range Infos[i].JWT {
-			info["JWT"] = append(info["JWT"], map[string]string{"JWT": Infos[i].JWT[i2], "Source": Infos[i].Source})
-		}
-		for i2 := range Infos[i].Email {
-			info["Email"] = append(info["Email"], map[string]string{"Email": Infos[i].Email[i2], "Source": Infos[i].Source})
-		}
-		for i2 := range Infos[i].Phone {
-			info["Phone"] = append(info["Phone"], map[string]string{"Phone": Infos[i].Phone[i2], "Source": Infos[i].Source})
-		}
-		for i2 := range Infos[i].Other {
-			info["Other"] = append(info["Other"], map[string]string{"Other": Infos[i].Other[i2], "Source": Infos[i].Source})
-		}
+	infoMap := make(map[string]mode.Info)
+	for _, info := range Infos {
+		infoMap[info.Key] = info
 	}
 
 	var fileName string
@@ -326,7 +276,7 @@ func OutFileJson(out string) {
 	}
 	jsons["js"] = ResultJsHost
 	jsons["url"] = ResultUrlHost
-	jsons["info"] = info
+	jsons["info"] = infoMap
 	jsons["fuzz"] = Fuzzs
 	jsons["domain"] = Domains
 	if cmd.S != "" && cmd.Z != 0 {
@@ -457,31 +407,36 @@ func OutFileHtml(out string) {
 	htmlTemp = strings.Replace(htmlTemp, "{Domains}", DomainsStr, -1)
 
 	var Infostr string
-	for i := range Infos {
-		for i2 := range Infos[i].Phone {
-			Infostr += outHtmlInfoString("Phone", Infos[i].Phone[i2], Infos[i].Source)
+	for _, info := range Infos {
+		for _, matche := range info.Matches {
+			Infostr += outHtmlInfoString(info.Key, matche, info.Source)
 		}
 	}
-	for i := range Infos {
-		for i2 := range Infos[i].Email {
-			Infostr += outHtmlInfoString("Email", Infos[i].Email[i2], Infos[i].Source)
-		}
-	}
-	for i := range Infos {
-		for i2 := range Infos[i].IDcard {
-			Infostr += outHtmlInfoString("IDcard", Infos[i].IDcard[i2], Infos[i].Source)
-		}
-	}
-	for i := range Infos {
-		for i2 := range Infos[i].JWT {
-			Infostr += outHtmlInfoString("JWT", Infos[i].JWT[i2], Infos[i].Source)
-		}
-	}
-	for i := range Infos {
-		for i2 := range Infos[i].Other {
-			Infostr += outHtmlInfoString("Other", Infos[i].Other[i2], Infos[i].Source)
-		}
-	}
+	//for i := range Infos {
+	//	for i2 := range Infos[i].Phone {
+	//		Infostr += outHtmlInfoString("Phone", Infos[i].Phone[i2], Infos[i].Source)
+	//	}
+	//}
+	//for i := range Infos {
+	//	for i2 := range Infos[i].Email {
+	//		Infostr += outHtmlInfoString("Email", Infos[i].Email[i2], Infos[i].Source)
+	//	}
+	//}
+	//for i := range Infos {
+	//	for i2 := range Infos[i].IDcard {
+	//		Infostr += outHtmlInfoString("IDcard", Infos[i].IDcard[i2], Infos[i].Source)
+	//	}
+	//}
+	//for i := range Infos {
+	//	for i2 := range Infos[i].JWT {
+	//		Infostr += outHtmlInfoString("JWT", Infos[i].JWT[i2], Infos[i].Source)
+	//	}
+	//}
+	//for i := range Infos {
+	//	for i2 := range Infos[i].Other {
+	//		Infostr += outHtmlInfoString("Other", Infos[i].Other[i2], Infos[i].Source)
+	//	}
+	//}
 	htmlTemp = strings.Replace(htmlTemp, "{Info}", Infostr, -1)
 	writer.WriteString(htmlTemp)
 	writer.Flush() //内容是先写到缓存对,所以需要调用flush将缓存对数据真正写到文件中
@@ -659,66 +614,12 @@ func Print() {
 	}
 
 	if len(Infos) > 0 {
-		fmt.Println("\n Phone ")
-		for i := range Infos {
-			for i2 := range Infos[i].Phone {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Phone[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
+		for _, info := range Infos {
+			fmt.Printf("%s\n", color.LightBlue.Sprintf("Key: %s", info.Key))
+			for _, match := range info.Matches {
+				fmt.Printf("%s\n", color.LightBlue.Sprintf("匹配到数据: %s", match))
 			}
-		}
-		fmt.Println("\n Email ")
-		for i := range Infos {
-			for i2 := range Infos[i].Email {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Email[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n IDcard ")
-		for i := range Infos {
-			for i2 := range Infos[i].IDcard {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].IDcard[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n JWT ")
-		for i := range Infos {
-			for i2 := range Infos[i].JWT {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].JWT[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-
-		fmt.Println("\n Other ")
-		for i := range Infos {
-			for i2 := range Infos[i].Other {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Other[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n 内网IP ")
-		for i := range Infos {
-			for i2 := range Infos[i].IP {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].IP[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n swaggerui ")
-		for i := range Infos {
-			for i2 := range Infos[i].Swaggerui {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Swaggerui[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n Webhook ")
-		for i := range Infos {
-			for i2 := range Infos[i].Webhook {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Webhook[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n grafana ")
-		for i := range Infos {
-			for i2 := range Infos[i].Grafana {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Grafana[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
-		}
-		fmt.Println("\n jdbc ")
-		for i := range Infos {
-			for i2 := range Infos[i].Jdbc {
-				fmt.Printf(color.LightBlue.Sprintf("%-10s", Infos[i].Jdbc[i2]) + color.LightGreen.Sprintf(" [ Source: %s ]\n", Infos[i].Source))
-			}
+			fmt.Printf("%s\n", color.LightBlue.Sprintf("数据来源: %s", info.Source))
 		}
 	}
 

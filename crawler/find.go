@@ -227,75 +227,32 @@ func urlFind(cont, host, scheme, path, source string, num int) {
 
 // 分析内容中的敏感信息
 func infoFind(cont, source string) {
-	info := mode.Info{}
-	//手机号码
-	for i := range config.Phone {
-		phones := regexp.MustCompile(config.Phone[i]).FindAllStringSubmatch(cont, -1)
-		for i := range phones {
-			info.Phone = append(info.Phone, phones[i][0])
+	info := []mode.Info{}
+	//cont = strings.ReplaceAll(cont, "\r", "")
+	//cont = strings.ReplaceAll(cont, "\n", "")
+	for key, regexps := range config.Infofind {
+		for _, regexpstr := range regexps {
+			values := regexp.MustCompile(regexpstr).FindAllStringSubmatch(cont, -1)
+			if values != nil {
+				for _, value := range values {
+					found := false
+					for i, inf := range info {
+						if inf.Key == key {
+							info[i].Matches = append(info[i].Matches, value...)
+							found = true
+							break
+						}
+					}
+					if !found {
+						info = append(info, mode.Info{Key: key, Matches: value, Source: source})
+					}
+				}
+			}
 		}
 	}
-
-	for i := range config.Email {
-		emails := regexp.MustCompile(config.Email[i]).FindAllStringSubmatch(cont, -1)
-		for i := range emails {
-			info.Email = append(info.Email, emails[i][0])
+	if len(info) != 0 {
+		for _, singleInfo := range info {
+			AppendInfo(singleInfo)
 		}
 	}
-
-	for i := range config.IDcard {
-		IDcards := regexp.MustCompile(config.IDcard[i]).FindAllStringSubmatch(cont, -1)
-		for i := range IDcards {
-			info.IDcard = append(info.IDcard, IDcards[i][0])
-		}
-	}
-
-	for i := range config.Jwt {
-		Jwts := regexp.MustCompile(config.Jwt[i]).FindAllStringSubmatch(cont, -1)
-		for i := range Jwts {
-			info.JWT = append(info.JWT, Jwts[i][0])
-		}
-	}
-	for i := range config.Other {
-		Others := regexp.MustCompile(config.Other[i]).FindAllStringSubmatch(cont, -1)
-		for i := range Others {
-			info.Other = append(info.Other, Others[i][0])
-		}
-	}
-	for i := range config.Ip {
-		IP := regexp.MustCompile(config.Ip[i]).FindAllStringSubmatch(cont, -1)
-		for i := range IP {
-			info.IP = append(info.IP, IP[i][0])
-		}
-	}
-	for i := range config.Grafana {
-		grafana := regexp.MustCompile(config.Grafana[i]).FindAllStringSubmatch(cont, -1)
-		for i := range grafana {
-			info.Grafana = append(info.Grafana, grafana[i][0])
-		}
-	}
-	for i := range config.Webhook {
-		webhook := regexp.MustCompile(config.Webhook[i]).FindAllStringSubmatch(cont, -1)
-		for i := range webhook {
-			info.Webhook = append(info.Webhook, webhook[i][0])
-		}
-	}
-	for i := range config.Swaggerui {
-		swaggerui := regexp.MustCompile(config.Swaggerui[i]).FindAllStringSubmatch(cont, -1)
-		for i := range swaggerui {
-			info.Swaggerui = append(info.Swaggerui, swaggerui[i][0])
-		}
-	}
-	for i := range config.Jdbc {
-		jdbc := regexp.MustCompile(config.Jdbc[i]).FindAllStringSubmatch(cont, -1)
-		for i := range jdbc {
-			info.Jdbc = append(info.Jdbc, jdbc[i][0])
-		}
-	}
-
-	info.Source = source
-	if len(info.Phone) != 0 || len(info.IDcard) != 0 || len(info.JWT) != 0 || len(info.Email) != 0 || len(info.Other) != 0 || len(info.Jdbc) != 0 || len(info.Swaggerui) != 0 || len(info.Webhook) != 0 || len(info.Grafana) != 0 || len(info.IP) != 0 {
-		AppendInfo(info)
-	}
-
 }

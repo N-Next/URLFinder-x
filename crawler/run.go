@@ -316,6 +316,7 @@ func AppendInfo(info mode.Info) {
 	config.Lock.Lock()
 	defer config.Lock.Unlock()
 	result.Infos = append(result.Infos, info)
+
 }
 
 func AppendEndUrl(url string) {

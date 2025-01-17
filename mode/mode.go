@@ -27,15 +27,7 @@ type Link struct {
 }
 
 type Info struct {
-	Phone     []string
-	Email     []string
-	IDcard    []string
-	JWT       []string
-	Other     []string
-	IP        []string
-	Swaggerui []string
-	Jdbc      []string
-	Webhook   []string
-	Grafana   []string
-	Source    string
+	Key     string
+	Matches []string
+	Source  string
 }
