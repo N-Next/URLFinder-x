@@ -1,4 +1,6 @@
 # 简介
+URLFinder-x是一个优化后的URLFinder工具，通过对URLFinder代码的简单重构。将粗略的完成部分灯塔的 WebInfoHunter功能与URLFinder进行融合。它能够通过自定义的正则表达式对网页中的各种敏感信息进行提取。这个工具不仅可以匹配到手机号、邮箱、身份证号等个人信息，还可以检测到JWT（JSON Web Token）、accesskey、Webhook URL以及内网IP地址等多种类型的敏感数据。此外，使用者还可以添加针对阿里云、腾讯云和亚马逊云等服务提供商的API密钥规则。
+
 代码是在[URLFinder](https://github.com/pingc0y/URLFinder)项目基础上进行优化的，[readme](https://github.com/pingc0y/URLFinder/blob/master/README.md)可直接参考。
 ## 2025-1-4
 - [x] 添加并优化了多条正则表达式，目前可以匹配到**手机号、邮箱、身份证、JWT、accesskey、Webhook、内网IP、Swagger-UI、JDBC链接**。
@@ -89,7 +91,19 @@ jsFuzzPath:
 
 复制yml规则到当前目录下为config.yaml
 
-`-i -u http://xxxx.xxxx.xxxx -m 3`
+```
+快速使用：
+-i -u http://xxx.xxx.xxx -m3 
+导出全部
+-i -s all -m 3 -f url.txt -o .
+只导出html
+-i -s all -m 3 -f url.txt -o res.html
+结果统一保存
+-i -s all -m 3 -ff url.txt -o .
+```
+![image](https://github.com/user-attachments/assets/823145be-f277-428b-b769-1ac35fa54415)
+
+![image](https://github.com/user-attachments/assets/9b915642-54de-4f7c-8f03-1cad693aa8df)
 
 在测试过程中发现常规敏感信息正则表达式在复杂的返回报文中无法完全适用，准确率不高。需要自行测试表达式是否准确适用，这里我提供一个简单的demo方便测试，以及一个[rule](https://github.com/any86/any-rule)库
 ~~~
